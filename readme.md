@@ -25,9 +25,9 @@ This motivated me to work more on this project and improve its accuracy.
 
 Files can be found inside `experiment_2/`
 
-I decided that the first step to improve my model would be to collect not only more data, but in better quality as well. Looking at what I used initially, there's a ton of noise in that data: I only want to get my eyes, and I'm getting a much bigger part of my face instead. 
+I decided that the first step to improve my model would be to collect not only more data, but better quality data as well. Looking at the data I used initially, there's a ton of noise: I'm getting a much bigger part of my face instead of just my eye.
 
-So I look up for a better method, and I found the amazing `face_recognition` library. It uses `dlib` under the hood which is a collection of deep learning models that are *insanely* accurate at extracting a particular part of a human's face. I created another script that also recorded my webcam + position of the cursor, and collected around 1000 images (see [experiment_2/collect_data.py](experiment_2/collect_data.py)).
+So I look up for a better "eye extraction" method, and I found the amazing `face_recognition` library. It uses `dlib`'s deep learning models under the hood, and they are *insanely* accurate at doing all sorts of tasks related to face detection. I created another script that also recorded my webcam + position of the cursor, and collected around 1000 images (see [experiment_2/collect_data.py](experiment_2/collect_data.py)).
 
 ![Im](2.jpg)
 
