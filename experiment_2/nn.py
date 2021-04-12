@@ -17,12 +17,7 @@ from sklearn.metrics import mean_squared_error
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.manual_seed(0)
 from numpy import asarray
-# https://stackoverflow.com/questions/32888108/denormalization-of-predicted-data-in-neural-networks
 
-# def maximum_absolute_scaling(df):
-#     df_scaled = df.copy()
-#     df_scaled = df_scaled  / df_scaled.abs().max()
-#     return df_scaled
 
 myPD = pd.read_csv('./dlib_dataset2.csv')
 myPD = asarray(myPD['x_coord']).reshape(-1, 1)
@@ -31,18 +26,7 @@ from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
 scaled = scaler.fit_transform(myPD)
 
-#
-# print(scaled, unscaled)
-#
-# quit()
 
-
-def normalize(df):
-    norm_df = df.copy()
-    norm_df = (norm_df - norm_df.mean())/norm_df.std()
-    m = norm_df.mean()
-    s = norm_df.std()
-    return (norm_df, m, s)
 
 class MyDataset(Dataset):
     def __init__(self, csv_file, root_dir):
@@ -92,7 +76,7 @@ dataset = MyDataset(
     root_dir='dlib_data'
 )
 
-train_set, test_set = torch.utils.data.random_split(dataset, lengths=[1600, 281])
+train_set, test_set = torch.utils.data.random_split(dataset, lengths=[1400, 481])
 
 train_loader = DataLoader(dataset=train_set, batch_size=16, shuffle=True)
 test_loader = DataLoader(dataset=test_set, batch_size=16, shuffle=True)
