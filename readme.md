@@ -13,7 +13,7 @@ I want to see if this problem is learnable, i.e. if I can use the power of Neura
 
 So I've created a small network with PyTorch and collected 3000 images using `cv2.CascadeClassifiers`. Every time an image was taken with my webcam, I was looking at my cursor and saved its x-coordinate pixel location using `pyautogui`. 
 
-[image_eyes]
+![Im](1.jpg)
 
 There's both the left and right eye in this dataset, and it was quite hard to get cv2 to collect only one eye. So in the end I opted to keep both. 
 
@@ -29,7 +29,7 @@ I decided that the first step to improve my model would be to collect not only m
 
 So I look up for a better method, and I found the amazing `face_recognition` library. It uses `dlib` under the hood which is a collection of deep learning models that are *insanely* accurate at extracting a particular part of a human's face. I created another script that also recorded my webcam + position of the cursor, and collected around 1000 images.
 
-[im2]
+![Im](2.jpg)
 
 That's much better. I retrained my network with high hopes and... it converged to an RMSE of around 500px. So I thought that the problem might come from the model itself. In his [Recipe for Training Neural Networks](http://karpathy.github.io/2019/04/25/recipe/), Andrej Karpathy gives a few heuristics for training neural nets. One of them is performing a small "overfit check", i.e. letting the model overfit on a small sample of the training data, and checking if the loss goes near 0. If it doesn't, then there's a problem with the model. 
 
