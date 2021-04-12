@@ -16,18 +16,42 @@ from sklearn.metrics import mean_squared_error
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.manual_seed(0)
+from numpy import asarray
+# https://stackoverflow.com/questions/32888108/denormalization-of-predicted-data-in-neural-networks
+
+# def maximum_absolute_scaling(df):
+#     df_scaled = df.copy()
+#     df_scaled = df_scaled  / df_scaled.abs().max()
+#     return df_scaled
+
+myPD = pd.read_csv('./dlib_dataset2.csv')
+myPD = asarray(myPD['x_coord']).reshape(-1, 1)
+
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+scaled = scaler.fit_transform(myPD)
+
+#
+# print(scaled, unscaled)
+#
+# quit()
 
 
-def maximum_absolute_scaling(df):
-    df_scaled = df.copy()
-    df_scaled = df_scaled  / df_scaled.abs().max()
-    return df_scaled
+def normalize(df):
+    norm_df = df.copy()
+    norm_df = (norm_df - norm_df.mean())/norm_df.std()
+    m = norm_df.mean()
+    s = norm_df.std()
+    return (norm_df, m, s)
 
 class MyDataset(Dataset):
     def __init__(self, csv_file, root_dir):
         self.annotations = pd.read_csv(csv_file)
-        self.y = self.annotations['x_coord']
-        self.y_labels = maximum_absolute_scaling(self.y)
+        # self.y = self.annotations['x_coord']
+        self.y = scaled
+        # self.y = normalize(self.y)[0]
+        # self.mean = normalize(self.y)[1]
+        # self.std = normalize(self.y)[2]
         self.root_dir = root_dir
 
     def __len__(self):
@@ -47,7 +71,7 @@ class MyDataset(Dataset):
         res = torch.from_numpy(res)
         res = myT(res)
         res = res.permute(2, 1, 0)
-        y_label = torch.tensor(int(self.y_labels.iloc[index]))
+        y_label = torch.tensor(int(self.y[index]))
         return (res, y_label)
 
 
@@ -64,27 +88,27 @@ class ConvNet(torch.nn.Module):
         return out
 
 dataset = MyDataset(
-    csv_file='overfit_dataset.csv',
+    csv_file='dlib_dataset2.csv',
     root_dir='dlib_data'
 )
 
-train_set, test_set = torch.utils.data.random_split(dataset, lengths=[12, 1])
+train_set, test_set = torch.utils.data.random_split(dataset, lengths=[1600, 281])
 
-train_loader = DataLoader(dataset=train_set, batch_size=12, shuffle=True)
-test_loader = DataLoader(dataset=test_set, batch_size=12, shuffle=True)
+train_loader = DataLoader(dataset=train_set, batch_size=16, shuffle=True)
+test_loader = DataLoader(dataset=test_set, batch_size=16, shuffle=True)
 
 def RMSELoss(yhat,y):
     return torch.sqrt(torch.mean((yhat-y)**2))
 
 model = ConvNet()
-criterion = nn.MSELoss()
-# criterion = RMSELoss
+# criterion = nn.MSELoss()
+criterion = RMSELoss
 
 optimizer = torch.optim.Adam(model.parameters(), lr=0.00001)
 
 losses = []
 
-for epoch in range(100000):
+for epoch in range(155):
     for batch_idx, (data, targets) in enumerate(train_loader):
         data = data.to(device=device)
         targets = targets.to(device=device)
@@ -94,7 +118,7 @@ for epoch in range(100000):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-    if epoch % 250 == 0:
+    if epoch % 5 == 0:
         print('Cost: {0} = {1}'.format(epoch, sum(losses)/len(losses)))
 
 
@@ -111,5 +135,9 @@ def evaluate_model(test_dl, model):
     mse = mean_squared_error(actuals, predictions)
     return mse
 
-mse = evaluate_model(train_loader, model)
+mse = evaluate_model(test_loader, model)
 print('MSE: %.3f, RMSE: %.3f' % (mse, sqrt(mse)))
+
+valll = asarray([sqrt(mse)]).reshape((-1, 1))
+unscaled = scaler.inverse_transform(valll)
+print('acc: ', unscaled)

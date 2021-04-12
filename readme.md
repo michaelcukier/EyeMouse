@@ -37,8 +37,10 @@ So I tried on a sample of 10 images (see [experiment_2/overfit_dataset.csv](expe
 
 # Next steps
 
+* use tensorboard
+* create a way to launch experiments with various parameters (epochs, lr, batchsize, etc.) using some kind of config master script
 * Retrain on the 1000 images and (normalized) targets and see where this goes. 
-* Collect (way) more data
+* Collect (way) more data & do data augmentation
 * Build network that accepts two images (left and right eye) and the x,y coordinate of the head w.r.t the screen. 
 * Create multi-ouput regression model (at the moment it only predicts the x-location).
 * Do hyperparameters search with `wandb`.
