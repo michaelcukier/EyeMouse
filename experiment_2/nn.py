@@ -8,16 +8,18 @@ from torch.utils.data import DataLoader
 import cv2
 import torch.nn as nn
 import torch.nn.functional as F
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 from PIL import Image
 import numpy as np
+from numpy import vstack
+from numpy import sqrt
+from sklearn.metrics import mean_squared_error
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.manual_seed(0)
 
 
 def maximum_absolute_scaling(df):
-    # copy the dataframe
     df_scaled = df.copy()
-    # apply maximum absolute scaling
     df_scaled = df_scaled  / df_scaled.abs().max()
     return df_scaled
 
@@ -27,7 +29,6 @@ class MyDataset(Dataset):
         self.y = self.annotations['x_coord']
         self.y_labels = maximum_absolute_scaling(self.y)
         self.root_dir = root_dir
-
 
     def __len__(self):
         return len(self.annotations)
@@ -97,29 +98,18 @@ for epoch in range(100000):
         print('Cost: {0} = {1}'.format(epoch, sum(losses)/len(losses)))
 
 
-from numpy import vstack
-from numpy import sqrt
-from pandas import read_csv
-from sklearn.metrics import mean_squared_error
-
 def evaluate_model(test_dl, model):
     predictions, actuals = list(), list()
     for i, (inputs, targets) in enumerate(test_dl):
-        # evaluate the model on the test set
-
         yhat = model(inputs)
-        # retrieve numpy array
         yhat = yhat.detach().numpy()
         actual = targets.numpy()
         actual = actual.reshape((len(actual), 1))
-        # store
         predictions.append(yhat)
         actuals.append(actual)
     predictions, actuals = vstack(predictions), vstack(actuals)
-    # calculate mse
     mse = mean_squared_error(actuals, predictions)
     return mse
-
 
 mse = evaluate_model(train_loader, model)
 print('MSE: %.3f, RMSE: %.3f' % (mse, sqrt(mse)))
