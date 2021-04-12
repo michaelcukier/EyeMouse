@@ -17,7 +17,7 @@ So I've created a small network with PyTorch and collected 3000 images using `cv
 
 There's both the left and right eye in this dataset, and it was quite hard to get cv2 to collect only one eye. So in the end I opted to keep both. 
 
-I trained my nework locally and the RMSE loss went from +- 900px down to +- 500px. So everytime the network made a prediction, it is off by around 500px, which isn't great BUT because the network is learning it seems promising.
+I trained my nework locally and the RMSE loss went from +- 900px down to +- 500px. So every time the network makes a prediction, it is off by +- 500px, which isn't great BUT because the network is learning it seems promising.
 
 This motivated me to work more on this project and improve its accuracy.
 
