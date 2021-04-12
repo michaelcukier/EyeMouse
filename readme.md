@@ -33,7 +33,7 @@ So I look up for a better method, and I found the amazing `face_recognition` lib
 
 That's much better. I retrained my network with high hopes and... it converged to an RMSE of around 500px. So I thought that the problem might come from the model itself. In his [Recipe for Training Neural Networks](http://karpathy.github.io/2019/04/25/recipe/), Andrej Karpathy gives a few heuristics for training neural nets. One of them is performing a small "overfit check", i.e. letting the model overfit on a small sample of the training data, and checking if the loss goes near 0. If it doesn't, then there's a problem with the model. 
 
-So I tried overfitting my model of 10 images, and the network didn't overfit. I looked into my code and after a bit of research, it turned out that had forgotten to normalize my targets. So my network was trying to predict values in the `[0, 1600]` range..! I normalized my targets and my network was finally overfitting.  
+So I tried on a sample of 10 images, and the network didn't overfit. I looked into my code and after (a ton of) research, it turned out that I had forgotten to normalize my targets. So my network was trying to predict values... in the `[0, 1600]` range! I normalized my targets and my network was finally overfitting.  
 
 # Next steps
 
@@ -42,3 +42,4 @@ So I tried overfitting my model of 10 images, and the network didn't overfit. I 
 * Build network that accepts two images (left and right eye) and the x,y coordinate of the head w.r.t the screen. 
 * Create multi-ouput regression model (at the moment it only predicts the x-location).
 * Do hyperparameters search with `wandb`.
+* (maybe, if things don't work) Turn this into a classification problem, where I predict a part of the screen instead of exact coordinates. 
